@@ -15,6 +15,8 @@ public struct MovementSettings
     public uint jumpCount;
     public float maxDownwardSpeed;
     public Vector3 ShotPositionOffset;
+    public float maxFallingDistance;
+    public float maxLandingDistance;
 }
 
 public class Player : MonoBehaviour
@@ -53,6 +55,16 @@ public class Player : MonoBehaviour
         var deltaTime = Mathf.Min(Time.deltaTime, 0.033f);
         updateMovement(deltaTime);
     }
+    
+    bool checkLandingDie()
+    {
+        return currentFallingDistance <= settings.maxLandingDistance;
+    }
+    
+    bool checkFallingDie()
+    {
+        return currentFallingDistance <= settings.maxFallingDistance;
+    }
 #region Presentation
     public ParticleSystem sparkjet;
     public GameObject GunRoot;
@@ -65,6 +77,7 @@ public class Player : MonoBehaviour
     private Vector3 moveForwardDirection;
     
     private uint currentJumpCount;
+    private float currentFallingDistance;
     void updateMovement(float deltaTime)
     {
         var hm = _getHorizontalMotion();
@@ -75,11 +88,28 @@ public class Player : MonoBehaviour
         dtMotion = currentMotion * deltaTime;
         // reset jump flag
         jumpFlag = false;
+        var pos_old = transform.position;
         var flags = controller.Move(dtMotion);
+        var pos_new = transform.position;
         if (controller.isGrounded)
         {
+            if (checkLandingDie())
+            {
+                Debug.Log("Landing Died!");
+                // destroy frog and restart game
+            }
             vSpeed = 0;
             currentJumpCount = 0;
+            currentFallingDistance = 0;
+        }
+        else
+        {
+            if (checkFallingDie())
+            {
+                Debug.Log("Falling Died!");
+                // destroy frog and restart game¬
+            }
+            currentFallingDistance += pos_new.y - pos_old.y;
         }
     }
 
@@ -126,6 +156,7 @@ public class Player : MonoBehaviour
     {
         if (currentJumpCount < settings.jumpCount)
         {
+            currentFallingDistance = 0;
             jumpFlag = true;
             currentJumpCount++;
             if (sparkjet != null)
@@ -149,7 +180,7 @@ private void InitDebugInfo()
 }
 private void OnGUI()
 {
-    _logs.Add($"[IsGrounded] {controller.isGrounded} [CurrentJumpCount] {currentJumpCount}");
+    _logs.Add($"[IsGrounded] {controller.isGrounded} [CurrentJumpCount] {currentJumpCount} [CurrentFallingDis] {currentFallingDistance}");
     _logs.Add($"[currentMotion] {currentMotion} [dtMotion] {dtMotion}");
     _logs.Add($"[freelookcam forward] {freeLookCamera.transform.forward} [dir] {moveForwardDirection}");
     for (int i = 0; i < _logs.Count; i++)
