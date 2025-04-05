@@ -11,6 +11,7 @@ public struct MovementSettings
     public float moveSpeed;
     public float gravity;
     public float jumpForce;
+    public uint jumpCount;
     public float maxDownwardSpeed;
 }
 
@@ -39,7 +40,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         getMoveDirection();
-        if (controller.isGrounded && Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump"))
         {
             Jump();
         }
@@ -47,13 +48,17 @@ public class Player : MonoBehaviour
         var deltaTime = Mathf.Min(Time.deltaTime, 0.033f);
         updateMovement(deltaTime);
     }
-
+#region Presentation
+    public ParticleSystem sparkjet;
+#endregion
 #region Movement
     private bool jumpFlag = false;
     private float vSpeed;
     private Vector3 currentMotion;
     private Vector3 dtMotion;
     private Vector3 moveForwardDirection;
+    
+    private uint currentJumpCount;
     void updateMovement(float deltaTime)
     {
         var hm = _getHorizontalMotion();
@@ -68,6 +73,7 @@ public class Player : MonoBehaviour
         if (controller.isGrounded)
         {
             vSpeed = 0;
+            currentJumpCount = 0;
         }
     }
 
@@ -96,7 +102,7 @@ public class Player : MonoBehaviour
         var speed = vspeed;
         if (jumpFlag)
         {
-            speed = settings.jumpForce;
+            speed += settings.jumpForce;
         }
         else
         {
@@ -112,8 +118,16 @@ public class Player : MonoBehaviour
 
     public void Jump()
     {
-        // todo: inAir can't jump again
-        jumpFlag = true;
+        if (currentJumpCount < settings.jumpCount)
+        {
+            jumpFlag = true;
+            currentJumpCount++;
+            if (sparkjet != null)
+            {
+                sparkjet.Play();
+            }
+            GameManager.Instance.SpawnBullet(transform.position + Vector3.up, Quaternion.LookRotation(Vector3.down));
+        }
     }
 #endregion
 
@@ -129,7 +143,7 @@ private void InitDebugInfo()
 }
 private void OnGUI()
 {
-    _logs.Add($"[IsGrounded] {controller.isGrounded}");
+    _logs.Add($"[IsGrounded] {controller.isGrounded} [CurrentJumpCount] {currentJumpCount}");
     _logs.Add($"[currentMotion] {currentMotion} [dtMotion] {dtMotion}");
     _logs.Add($"[freelookcam forward] {freeLookCamera.transform.forward} [dir] {moveForwardDirection}");
     for (int i = 0; i < _logs.Count; i++)
