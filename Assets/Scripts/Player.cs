@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -17,12 +18,15 @@ public class Player : MonoBehaviour
 {
     CharacterController controller;
     public MovementSettings settings;
+    public CinemachineFreeLook freeLookCamera;
+    public Camera camera;
     
     void Awake()
     {
         InitDebugInfo();
         controller = GetComponent<CharacterController>();
-        
+        freeLookCamera = FindObjectOfType<CinemachineFreeLook>();
+        camera = Camera.main;
     }
     
     // Start is called before the first frame update
@@ -34,6 +38,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        getMoveDirection();
         if (controller.isGrounded && Input.GetButtonDown("Jump"))
         {
             Jump();
@@ -48,11 +53,14 @@ public class Player : MonoBehaviour
     private float vSpeed;
     private Vector3 currentMotion;
     private Vector3 dtMotion;
+    private Vector3 moveForwardDirection;
     void updateMovement(float deltaTime)
     {
         var hm = _getHorizontalMotion();
         vSpeed = _getVerticalMotion(vSpeed);
         currentMotion = new Vector3(hm.x, vSpeed, hm.y);
+        var rot = Quaternion.Euler(0, camera.transform.rotation.eulerAngles.y, 0);
+        currentMotion = rot * currentMotion;
         dtMotion = currentMotion * deltaTime;
         // reset jump flag
         jumpFlag = false;
@@ -61,6 +69,15 @@ public class Player : MonoBehaviour
         // {
         //     vSpeed = 0;
         // }
+    }
+
+    void getMoveDirection()
+    {
+        moveForwardDirection = this.transform.position - freeLookCamera.transform.position;
+        moveForwardDirection.y = 0;
+        moveForwardDirection.Normalize();
+        // lerp player forward
+        transform.forward = Vector3.Slerp(transform.forward, moveForwardDirection, settings.moveSpeed * Time.deltaTime);
     }
 
     Vector2 _getHorizontalMotion()
@@ -110,6 +127,7 @@ private void OnGUI()
 {
     _logs.Add($"[IsGrounded] {controller.isGrounded}");
     _logs.Add($"[currentMotion] {currentMotion} [dtMotion] {dtMotion}");
+    _logs.Add($"[freelookcam forward] {freeLookCamera.transform.forward} [dir] {moveForwardDirection}");
     for (int i = 0; i < _logs.Count; i++)
     {
         GUI.Label(new Rect(10, 60 + i * 20, 500, 20), _logs[i], _sharedStyle);
