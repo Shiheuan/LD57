@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using MCommon.Unity.Utils;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,14 +14,16 @@ public struct MovementSettings
     public float jumpForce;
     public uint jumpCount;
     public float maxDownwardSpeed;
+    public Vector3 ShotPositionOffset;
 }
 
 public class Player : MonoBehaviour
 {
     CharacterController controller;
     public MovementSettings settings;
-    public CinemachineFreeLook freeLookCamera;
-    public Camera camera;
+    private CinemachineFreeLook freeLookCamera;
+    private Camera camera;
+    private Animator animator;
     
     void Awake()
     {
@@ -28,6 +31,7 @@ public class Player : MonoBehaviour
         controller = GetComponent<CharacterController>();
         freeLookCamera = FindObjectOfType<CinemachineFreeLook>();
         camera = Camera.main;
+        animator = GetComponentInChildren<Animator>();
     }
     
     // Start is called before the first frame update
@@ -43,6 +47,7 @@ public class Player : MonoBehaviour
         if (Input.GetButtonDown("Jump"))
         {
             Jump();
+            animator.SetTrigger("croak");
         }
         // check every update
         var deltaTime = Mathf.Min(Time.deltaTime, 0.033f);
@@ -50,6 +55,7 @@ public class Player : MonoBehaviour
     }
 #region Presentation
     public ParticleSystem sparkjet;
+    public GameObject GunRoot;
 #endregion
 #region Movement
     private bool jumpFlag = false;
@@ -126,7 +132,7 @@ public class Player : MonoBehaviour
             {
                 sparkjet.Play();
             }
-            GameManager.Instance.SpawnBullet(transform.position + Vector3.up, Quaternion.LookRotation(Vector3.down));
+            GameManager.Instance.SpawnBullet(transform.position + settings.ShotPositionOffset, Quaternion.LookRotation(Vector3.down));
         }
     }
 #endregion
@@ -157,5 +163,11 @@ public int GetDepth()
 {
     return (int)transform.position.y;
 }
+
+public void ShowGun(bool enable)
+{
+    GunRoot.SetGameObjectActive(enable);
+}
+
 #endregion
 }
