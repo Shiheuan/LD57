@@ -546,11 +546,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings:
     moveSpeed: 2
+    moveSpeedInAir: 5
+    turnSpeed: 5
     gravity: 16
     jumpForce: 5
     jumpCount: 0
     maxDownwardSpeed: 30
     ShotPositionOffset: {x: 0, y: 1, z: 0.5}
+    maxFallingDistance: -15
+    maxLandingDistance: -9
   sparkjet: {fileID: 5119586783519269812}
   GunRoot: {fileID: 1649608016868647205}
 --- !u!1 &8733789116109912681

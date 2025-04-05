@@ -10,6 +10,8 @@ using UnityEngine.Serialization;
 public struct MovementSettings
 {
     public float moveSpeed;
+    public float moveSpeedInAir;
+    public float turnSpeed;
     public float gravity;
     public float jumpForce;
     public uint jumpCount;
@@ -49,11 +51,16 @@ public class Player : MonoBehaviour
         if (Input.GetButtonDown("Jump"))
         {
             Jump();
-            animator.SetTrigger("croak");
         }
         // check every update
         var deltaTime = Mathf.Min(Time.deltaTime, 0.033f);
         updateMovement(deltaTime);
+    }
+
+    private void Croak()
+    {
+        animator.SetTrigger("croak");
+        // show something
     }
     
     bool checkLandingDie()
@@ -80,8 +87,8 @@ public class Player : MonoBehaviour
     private float currentFallingDistance;
     void updateMovement(float deltaTime)
     {
-        var hm = _getHorizontalMotion();
-        vSpeed = _getVerticalMotion(vSpeed);
+        var hm = _getHorizontalMotion(deltaTime);
+        vSpeed = _getVerticalMotion(vSpeed, deltaTime);
         currentMotion = new Vector3(hm.x, vSpeed, hm.y);
         var rot = Quaternion.Euler(0, camera.transform.rotation.eulerAngles.y, 0);
         currentMotion = rot * currentMotion;
@@ -118,22 +125,20 @@ public class Player : MonoBehaviour
         moveForwardDirection = this.transform.position - freeLookCamera.transform.position;
         moveForwardDirection.y = 0;
         moveForwardDirection.Normalize();
-        // lerp player forward
-        // transform.forward = Vector3.Slerp(transform.forward, moveForwardDirection, settings.moveSpeed * Time.deltaTime);
     }
 
-    Vector2 _getHorizontalMotion()
+    Vector2 _getHorizontalMotion(float deltaTime)
     {
-        var speed = settings.moveSpeed;
+        var speed = controller.isGrounded?settings.moveSpeed:settings.moveSpeedInAir;
         var hMotion = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"))*speed;
         if (hMotion != Vector2.zero)
         {
-            transform.forward = Vector3.Slerp(transform.forward, moveForwardDirection, settings.moveSpeed * Time.deltaTime);
+            transform.forward = Vector3.Slerp(transform.forward, moveForwardDirection, settings.turnSpeed * deltaTime);
         }
         return hMotion;
     }
 
-    float _getVerticalMotion(float vspeed)
+    float _getVerticalMotion(float vspeed, float deltaTime)
     {
         var speed = vspeed;
         if (jumpFlag)
@@ -142,7 +147,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            speed -= settings.gravity*Time.deltaTime;
+            speed -= settings.gravity*deltaTime;
             if (Mathf.Abs(speed) > settings.maxDownwardSpeed)
             {
                 speed = -settings.maxDownwardSpeed;
