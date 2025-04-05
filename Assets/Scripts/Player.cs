@@ -65,10 +65,10 @@ public class Player : MonoBehaviour
         // reset jump flag
         jumpFlag = false;
         var flags = controller.Move(dtMotion);
-        // if (controller.isGrounded)
-        // {
-        //     vSpeed = 0;
-        // }
+        if (controller.isGrounded)
+        {
+            vSpeed = 0;
+        }
     }
 
     void getMoveDirection()
@@ -77,13 +77,17 @@ public class Player : MonoBehaviour
         moveForwardDirection.y = 0;
         moveForwardDirection.Normalize();
         // lerp player forward
-        transform.forward = Vector3.Slerp(transform.forward, moveForwardDirection, settings.moveSpeed * Time.deltaTime);
+        // transform.forward = Vector3.Slerp(transform.forward, moveForwardDirection, settings.moveSpeed * Time.deltaTime);
     }
 
     Vector2 _getHorizontalMotion()
     {
         var speed = settings.moveSpeed;
         var hMotion = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"))*speed;
+        if (hMotion != Vector2.zero)
+        {
+            transform.forward = Vector3.Slerp(transform.forward, moveForwardDirection, settings.moveSpeed * Time.deltaTime);
+        }
         return hMotion;
     }
 
@@ -135,5 +139,9 @@ private void OnGUI()
     _logs.Clear();
 }
 
+public int GetDepth()
+{
+    return (int)transform.position.y;
+}
 #endregion
 }
