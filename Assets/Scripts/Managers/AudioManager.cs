@@ -37,14 +37,15 @@ public class AudioManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
+
+        Init();
     }
     
     public Sound[] sounds;
 
     private AudioSource tempSource;
     
-    // Start is called before the first frame update
-    void Start()
+    void Init()
     {
         foreach (var sound in sounds)
         {
@@ -54,7 +55,7 @@ public class AudioManager : MonoBehaviour
 
         tempSource = gameObject.AddComponent<AudioSource>();
 
-        PlaySound("intro");
+        //PlaySound("intro");
     }
 
     public void PlaySound(string name)
@@ -87,7 +88,8 @@ public class AudioManager : MonoBehaviour
         foreach (var sound in sounds)
         {
             AudioSource source = gameObject.AddComponent<AudioSource>();
-            sound.audioSource.Stop();
+            if (sound.audioSource != null)
+                sound.audioSource.Stop();
         }
 
     }

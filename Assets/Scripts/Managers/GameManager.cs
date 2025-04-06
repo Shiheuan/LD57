@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour
     {
         Application.targetFrameRate = 60;
         Cursor.lockState = CursorLockMode.Locked;
+        
+        LevelManager.Instance.StartLevel();
     }
 
     void Update()
@@ -81,20 +83,34 @@ public class GameManager : MonoBehaviour
     public async UniTaskVoid ShowEndScreen(ELevelType nextLevel)
     {
         HideAllEnemies();
+        bool hasGun = CurrentPlayer.GunRoot.activeSelf;
         string e1 = string.Empty, e2 = string.Empty;
         switch (LevelManager.Instance.nextLevel)
         {
             case ELevelType.Level1:
                 e1 = ConstString.Level1Ending;
                 e2 = ConstString.Level1EndingWithOperation;
+                if (hasGun)
+                {
+                    CurrentPlayer.settings.jumpCount = 3;
+                }
                 break;
             case ELevelType.Level2:
                 e1 = ConstString.Level2Ending;
                 e2 = ConstString.Level2EndingWithOperation;
+                if (hasGun)
+                {
+                    CurrentPlayer.settings.jumpCount = 5;
+                }
                 break;
             case ELevelType.Level3:
                 e1 = ConstString.Level3Ending;
                 e2 = ConstString.Level3EndingWithOperation;
+                if (hasGun)
+                {
+                    // back to intro
+                    CurrentPlayer.settings.jumpCount = 0;
+                }
                 break;
         }
         

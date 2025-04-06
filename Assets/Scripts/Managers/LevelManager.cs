@@ -49,16 +49,6 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        if (nextLevel == ELevelType.None)
-        {
-            nextLevel = ELevelType.Intro;
-        }
-
-        StartLevel();
-    }
-
     public GameObject Intro;
     public GameObject IntroSpawner;
     public GameObject Level_1;
@@ -72,6 +62,11 @@ public class LevelManager : MonoBehaviour
 
     public void StartLevel()
     {
+        if (nextLevel == ELevelType.None)
+        {
+            nextLevel = ELevelType.Intro;
+        }
+        
         AudioManager.Instance.StopAllSounds();
         Transform spawner = null;
         string bgm = string.Empty;
