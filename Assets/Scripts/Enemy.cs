@@ -26,8 +26,6 @@ public abstract class EnemyState
 
 public class PatrolState : EnemyState
 {
-    private int currentPointIndex;
-    
     public PatrolState(Enemy e) : base(e)
     {
         type = EEnemyState.Patrol;
@@ -36,14 +34,14 @@ public class PatrolState : EnemyState
     public override async UniTask EnterState()
     {
         cts = new CancellationTokenSource();
-        var v2 = enemy.settings.PatrolPoints[currentPointIndex];
+        var v2 = enemy.settings.PatrolPoints[enemy.currentPointIndex];
         var pos = enemy.SetDestination(v2);
         enemy.moving = true;
 
         await UniTask.WaitUntil(() => 
             Vector3.Distance(enemy.transform.position, pos) < enemy.settings.ReachTolerance, cancellationToken: cts.Token);
 
-        currentPointIndex = (currentPointIndex + 1) % enemy.settings.PatrolPoints.Length;
+        enemy.currentPointIndex = (enemy.currentPointIndex + 1) % enemy.settings.PatrolPoints.Length;
         await SwitchNextPoint();
     }
     
@@ -139,6 +137,7 @@ public class Enemy : MonoBehaviour
     private EnemyState currentState;
     public bool moving = false;
     public int currentHP;
+    public int currentPointIndex;
     
     [SerializeField]
     private HazardTrigger hazardTrigger;
@@ -210,10 +209,15 @@ public class Enemy : MonoBehaviour
     
     public void Die()
     {
-        RenderRoot.SetGameObjectActive(false);
-        groundSphere.SetGameObjectActive(true);
-        hazardTrigger.gameObject.SetGameObjectActive(false);
         SwitchState(states[EEnemyState.Dead]).Forget();
+        RefreshDeadState();
+    }
+
+    private void RefreshDeadState()
+    {
+        RenderRoot.SetGameObjectActive(isDie == false);
+        groundSphere.SetGameObjectActive(isDie == true);
+        hazardTrigger.gameObject.SetGameObjectActive(isDie == false);
     }
 
     public void TakeDamageOnce()
@@ -286,12 +290,16 @@ public class Enemy : MonoBehaviour
     public void Init(EnemySpawner spawner)
     {
         EndAI();
+        moving = false;
         settings = spawner.OverrideSettings;
         transform.position = spawner.transform.position;
         transform.rotation = spawner.transform.rotation;
-        isDie = false;
         currentHP = settings.MaxHP;
+        currentPointIndex = 0;
+        SetChaseTarget(null);
         gameObject.SetGameObjectActive(true);
+        isDie = false;
+        RefreshDeadState();
         StartAI();
     }
 }
