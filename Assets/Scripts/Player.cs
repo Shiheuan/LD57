@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
     CharacterController controller;
     public MovementSettings settings;
     private CinemachineFreeLook freeLookCamera;
-    private Camera camera;
+    private Camera _camera;
     private Animator animator;
     
     void Awake()
@@ -34,7 +34,7 @@ public class Player : MonoBehaviour
         InitDebugInfo();
         controller = GetComponent<CharacterController>();
         freeLookCamera = FindObjectOfType<CinemachineFreeLook>();
-        camera = Camera.main;
+        _camera = Camera.main;
         animator = GetComponentInChildren<Animator>();
     }
     
@@ -90,7 +90,7 @@ public class Player : MonoBehaviour
         var hm = _getHorizontalMotion(deltaTime);
         vSpeed = _getVerticalMotion(vSpeed, deltaTime);
         currentMotion = new Vector3(hm.x, vSpeed, hm.y);
-        var rot = Quaternion.Euler(0, camera.transform.rotation.eulerAngles.y, 0);
+        var rot = Quaternion.Euler(0, _camera.transform.rotation.eulerAngles.y, 0);
         currentMotion = rot * currentMotion;
         dtMotion = currentMotion * deltaTime;
         // reset jump flag

@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using MCommon.Unity.Utils;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -9,14 +8,28 @@ public class Bullet : MonoBehaviour
     public ParticleSystem TailFx;
 
     public ParticleSystem ExplosionFx;
+    public float lifetime;
+    private CancellationTokenSource lifetimeCts;
+    private CancellationTokenSource explosionCts;
+    private bool died = true;
 
-    private bool died = false;
-    // Start is called before the first frame update
-    void Start()
+    public void Init(Vector3 position, Quaternion rotation)
     {
+        transform.SetPositionAndRotation(position, rotation);
+        gameObject.SetGameObjectActive(true);
         died = false;
         TailFx.gameObject.SetGameObjectActive(true);
         TailFx.Play();
+        
+        lifetimeCts = new CancellationTokenSource();
+        DelayDestroy(lifetime, lifetimeCts).Forget();
+    }
+    
+    async UniTaskVoid DelayDestroy(float lifetime, CancellationTokenSource cts)
+    {
+        await UniTask.WaitForSeconds(lifetime, cancellationToken: cts.Token);
+        died = true;
+        gameObject.SetGameObjectActive(false);
     }
 
     public float speed;
@@ -28,7 +41,12 @@ public class Bullet : MonoBehaviour
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
             CheckCollision();
         }
-        
+    }
+
+    private void OnDestroy()
+    {
+        lifetimeCts?.Cancel();
+        explosionCts?.Cancel();
     }
 
     private RaycastHit[] hits = new RaycastHit[10];
@@ -45,7 +63,10 @@ public class Bullet : MonoBehaviour
                     ExplosionFx.gameObject.SetGameObjectActive(true);
                     ExplosionFx.Play();
                     TailFx.gameObject.SetGameObjectActive(false);
-                    died = true;
+                    died = true; // stop movement
+                    lifetimeCts?.Cancel();
+                    explosionCts = new CancellationTokenSource();
+                    DelayDestroy(5f, explosionCts).Forget();
                 }
             }
         }

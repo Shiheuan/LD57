@@ -51,12 +51,25 @@ public class GameManager : MonoBehaviour
     }
 #region Spawner
 
-    
+    public GameObject BulletPool;
     public GameObject BulletPrefab;
     public Bullet SpawnBullet(Vector3 position, Quaternion rotation)
     {
-        Bullet bullet = Instantiate(BulletPrefab, position, rotation).GetComponent<Bullet>();
-        return bullet;
+        for (int i = 0; i < BulletPool.transform.childCount; i++)
+        {
+            Bullet bullet = BulletPool.transform.GetChild(i).GetComponent<Bullet>();
+            if (bullet.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+            
+            bullet.Init(position, rotation);
+            return bullet;
+        }
+        
+        Bullet newBullet = Instantiate(BulletPrefab, BulletPool.transform).GetComponent<Bullet>();
+        newBullet.Init(position, rotation);
+        return newBullet;
     }
 #endregion
 }

@@ -50,6 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TailFx: {fileID: 7587034953542980410}
   ExplosionFx: {fileID: 3652480658042299541}
+  lifetime: 5
   speed: 50
 --- !u!135 &1076251815880503686
 SphereCollider:
