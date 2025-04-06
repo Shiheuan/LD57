@@ -72,7 +72,9 @@ public class LevelManager : MonoBehaviour
 
     public void StartLevel()
     {
+        AudioManager.Instance.StopAllSounds();
         Transform spawner = null;
+        string bgm = string.Empty;
         var ui = FindObjectOfType<ShowInfo>();
         if (Intro != null)
             Intro.SetGameObjectActive(nextLevel == ELevelType.Intro);
@@ -93,18 +95,23 @@ public class LevelManager : MonoBehaviour
         {
             case ELevelType.Intro:
                 spawner = IntroSpawner.transform;
+                bgm = "intro";
                 break;
             case ELevelType.Level1:
                 spawner = Level_1_Spawner.transform;
+                bgm = "bgm";
                 break;
             case ELevelType.Level2:
                 spawner = Level_2_Spawner.transform;
+                bgm = "intro";
                 break;
             case ELevelType.Level3:
                 spawner = Level_3_Spawner.transform;
+                bgm = "bgm";
                 break;
             case ELevelType.Endless:
                 spawner = Endless_Spawner.transform;
+                bgm = "intro";
                 break;
             default:
                 break;
@@ -118,6 +125,7 @@ public class LevelManager : MonoBehaviour
         
         var p = GameManager.Instance.CurrentPlayer;
         ui.AmmoRoot.SetGameObjectActive(p.settings.jumpCount != 0);
+        AudioManager.Instance.PlaySound(bgm);
     }
     
 }

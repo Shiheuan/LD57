@@ -71,6 +71,7 @@ public class ChaseState : EnemyState
     
     public override async UniTask EnterState()
     {
+        AudioManager.Instance.PlaySound("chase");
         cts = new CancellationTokenSource();
         var p = GameManager.Instance.CurrentPlayer;
         if (p == null) enemy.SwitchState(EEnemyState.Patrol);

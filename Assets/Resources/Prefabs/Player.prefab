@@ -32,6 +32,7 @@ Transform:
   - {fileID: 3694246964800918719}
   - {fileID: 1649608016868162821}
   - {fileID: 8769051022960912367}
+  - {fileID: 551394780825374076}
   m_Father: {fileID: 6261643755481389996}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &586681188740104428
@@ -281,6 +282,37 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &3148531931532161600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 551394780825374076}
+  m_Layer: 3
+  m_Name: LookTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &551394780825374076
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3148531931532161600}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.8, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7811057706019183261}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4044589448830709471
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,9 +587,13 @@ MonoBehaviour:
     ShotPositionOffset: {x: 0, y: 1, z: 0.5}
     maxFallingDistance: -15
     maxLandingDistance: -9
-  LookAtTarget: {fileID: 2024126936029427253}
+    CroakMinTriggerTime: 5
+    CroakProp: 0.5
+  LookAtTarget: {fileID: 551394780825374076}
   FollowTarget: {fileID: 6261643755481389996}
   IsDie: 0
+  croakTimer: 0
+  InputDir: {x: 0, y: 0}
   sparkjet: {fileID: 5119586783519269812}
   GunRoot: {fileID: 1649608016868647205}
   FreezeControl: 0

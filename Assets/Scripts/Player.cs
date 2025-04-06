@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using MCommon.Unity.Utils;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 [Serializable]
 public struct MovementSettings
@@ -21,6 +22,8 @@ public struct MovementSettings
     public Vector3 ShotPositionOffset;
     public float maxFallingDistance;
     public float maxLandingDistance;
+    public float CroakMinTriggerTime;
+    public float CroakProp;
 }
 
 public class Player : MonoBehaviour
@@ -33,6 +36,8 @@ public class Player : MonoBehaviour
     public Transform LookAtTarget;
     public Transform FollowTarget;
     public bool IsDie;
+    public float croakTimer;
+    public Vector2 InputDir;
     
     void Awake()
     {
@@ -65,6 +70,11 @@ public class Player : MonoBehaviour
     void Update()
     {
         getMoveDirection();
+        InputDir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        if (FreezeControl)
+        {
+            InputDir = Vector2.zero;
+        }
         if (Input.GetButtonDown("Jump"))
         {
             Jump();
@@ -75,12 +85,34 @@ public class Player : MonoBehaviour
         // todo: fix can't set position when spawn
         if (IsDie == false && FreezeControl == false)
             updateMovement(deltaTime);
+
+        if (InputDir == Vector2.zero)
+        {
+            croakTimer += deltaTime;
+            if (croakTimer >= settings.CroakMinTriggerTime &&
+                Random.Range(0f, 1f) > settings.CroakProp)
+            {
+
+                croakCts = new CancellationTokenSource();
+                Croak(croakCts).Forget();
+                croakTimer = 0;
+            }
+        }
+        else
+        {
+            croakTimer = 0;
+        }
     }
 
-    private void Croak()
+    private CancellationTokenSource croakCts;
+    private async UniTaskVoid Croak(CancellationTokenSource cts)
     {
         animator.SetTrigger("croak");
         // show something
+        await UniTask.Delay(1000, cancellationToken:cts.Token);
+        var index = Random.Range(1, 5);
+        AudioManager.Instance.PlaySound($"frog{index}");
+        
     }
     
     bool checkLandingDie()
@@ -174,12 +206,7 @@ public class Player : MonoBehaviour
     Vector2 _getHorizontalMotion(float deltaTime)
     {
         var speed = controller.isGrounded?settings.moveSpeed:settings.moveSpeedInAir;
-        var hMotion = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"))*speed;
-        if (FreezeControl)
-        {
-            hMotion = Vector2.zero;
-        }
-        
+        var hMotion = InputDir*speed;
         if (hMotion != Vector2.zero)
         {
             transform.forward = Vector3.Slerp(transform.forward, moveForwardDirection, settings.turnSpeed * deltaTime);
@@ -218,6 +245,8 @@ public class Player : MonoBehaviour
                 sparkjet.Play();
             }
             GameManager.Instance.SpawnBullet(transform.position + settings.ShotPositionOffset, Quaternion.LookRotation(Vector3.down));
+            
+            AudioManager.Instance.PlaySound("gun");
         }
     }
 
