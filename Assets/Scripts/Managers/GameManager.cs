@@ -44,10 +44,25 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         Application.targetFrameRate = 60;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // Update is called once per frame
     void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            LevelManager.Instance.StartLevel();
+        }
+    }
+    
+    public bool isGameOver = false;
+    
+    public void GameOver()
+    {
+        isGameOver = true;
+        // show some tip
+    }
+    public void RestartGame()
     {
         
     }
@@ -87,11 +102,13 @@ public class GameManager : MonoBehaviour
         {
             CurrentPlayer = Instantiate(PlayerPrefab, position, rotation).GetComponent<Player>();
             // bind camera
-            return CurrentPlayer;
         }
-        
+        // todo: init()
+        CurrentPlayer.SpawnFreeze(.5f);
+        Debug.Log($"set position: {position}");
         CurrentPlayer.transform.SetPositionAndRotation(position, rotation);
         CurrentPlayer.gameObject.SetGameObjectActive(true);
+        CurrentPlayer.IsDie = false;
         // change vc
         return CurrentPlayer;
     }

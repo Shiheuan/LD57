@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Cinemachine;
+using Cysharp.Threading.Tasks;
 using MCommon.Unity.Utils;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -30,6 +32,7 @@ public class Player : MonoBehaviour
     private Animator animator;
     public Transform LookAtTarget;
     public Transform FollowTarget;
+    public bool IsDie;
     
     void Awake()
     {
@@ -68,7 +71,10 @@ public class Player : MonoBehaviour
         }
         // check every update
         var deltaTime = Mathf.Min(Time.deltaTime, 0.033f);
-        updateMovement(deltaTime);
+        
+        // todo: fix can't set position when spawn
+        if (IsDie == false && FreezeControl == false)
+            updateMovement(deltaTime);
     }
 
     private void Croak()
@@ -87,11 +93,14 @@ public class Player : MonoBehaviour
         return currentFallingDistance <= settings.maxFallingDistance;
     }
 
-    void Die()
+    public void Die()
     {
         gameObject.SetGameObjectActive(false);
         FreezeControl = true;
+        IsDie = true;
+        currentFallingDistance = 0;
         GameManager.Instance.SpawnDieFx(transform.position+Vector3.up, transform.rotation);
+        GameManager.Instance.GameOver();
     }
 #region Presentation
     public ParticleSystem sparkjet;
@@ -152,6 +161,7 @@ public class Player : MonoBehaviour
             }
             currentFallingDistance += pos_new.y - pos_old.y;
         }
+        //Debug.Log($"curr position: {transform.position}");
     }
 
     void getMoveDirection()
@@ -209,6 +219,21 @@ public class Player : MonoBehaviour
             }
             GameManager.Instance.SpawnBullet(transform.position + settings.ShotPositionOffset, Quaternion.LookRotation(Vector3.down));
         }
+    }
+
+    private CancellationTokenSource freezeCts;
+    public void SpawnFreeze(float duration)
+    {
+        freezeCts = new CancellationTokenSource();
+        FreezeDuration(duration, freezeCts).Forget();
+    }
+    
+    async UniTaskVoid FreezeDuration(float duration, CancellationTokenSource cts)
+    {
+        FreezeControl = true;
+        await UniTask.WaitForSeconds(duration, cancellationToken: cts.Token);
+        FreezeControl = false;
+        
     }
 #endregion
 

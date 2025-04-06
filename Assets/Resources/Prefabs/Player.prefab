@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7811057706019183261}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Render
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 8079489817789740710}
   - component: {fileID: 1056654333115684538}
   - component: {fileID: 1082408785967083854}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -150,7 +150,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2992957722135217486}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ShotPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -185,7 +185,7 @@ GameObject:
   - component: {fileID: 6043887722740294552}
   - component: {fileID: 6839570925206367913}
   - component: {fileID: 553759163950391560}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -291,7 +291,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4784660849881233768}
   - component: {fileID: 7337932916557817711}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -385,7 +385,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1511306886212960571}
   - component: {fileID: 5782535621230477852}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Spot Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -480,7 +480,7 @@ GameObject:
   - component: {fileID: 6261643755481389996}
   - component: {fileID: 2919115265387473628}
   - component: {fileID: 6616929337448259905}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -557,6 +557,7 @@ MonoBehaviour:
     maxLandingDistance: -9
   LookAtTarget: {fileID: 2024126936029427253}
   FollowTarget: {fileID: 6261643755481389996}
+  IsDie: 0
   sparkjet: {fileID: 5119586783519269812}
   GunRoot: {fileID: 1649608016868647205}
   FreezeControl: 0
@@ -571,7 +572,7 @@ GameObject:
   - component: {fileID: 6735527237720974151}
   - component: {fileID: 5119586783519269812}
   - component: {fileID: 1922755265738915379}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SparkJet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5468,6 +5469,10 @@ PrefabInstance:
       value: Gun
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 97631170b86e7be47b9c866dbbe6cbda, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 97631170b86e7be47b9c866dbbe6cbda, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -5550,6 +5555,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7811057706019183261}
     m_Modifications:
+    - target: {fileID: -8700617353114198275, guid: ac9778bf920944dc086fd4f008838c41, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: -8700617353114198275, guid: ac9778bf920944dc086fd4f008838c41, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -5641,6 +5650,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: ac9778bf920944dc086fd4f008838c41, type: 3}
       propertyPath: m_Name
       value: frog
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ac9778bf920944dc086fd4f008838c41, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1822691222806785775, guid: ac9778bf920944dc086fd4f008838c41, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

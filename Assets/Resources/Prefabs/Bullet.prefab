@@ -52,6 +52,9 @@ MonoBehaviour:
   ExplosionFx: {fileID: 3652480658042299541}
   lifetime: 5
   speed: 50
+  hitLayerMask:
+    serializedVersion: 2
+    m_Bits: 640
 --- !u!135 &1076251815880503686
 SphereCollider:
   m_ObjectHideFlags: 0
