@@ -73,6 +73,7 @@ public class LevelManager : MonoBehaviour
     public void StartLevel()
     {
         Transform spawner = null;
+        var ui = FindObjectOfType<ShowInfo>();
         if (Intro != null)
             Intro.SetGameObjectActive(nextLevel == ELevelType.Intro);
         if (Level_1 != null)
@@ -83,6 +84,8 @@ public class LevelManager : MonoBehaviour
             Level_3.SetGameObjectActive(nextLevel == ELevelType.Level3);
         if (Endless != null)
             Endless.SetGameObjectActive(nextLevel == ELevelType.Endless);
+        
+        ui.ScoreRoot.gameObject.SetGameObjectActive(nextLevel != ELevelType.Intro);
         
         switch (nextLevel)
         {
@@ -104,11 +107,15 @@ public class LevelManager : MonoBehaviour
             default:
                 break;
         }
+        
 
         if (spawner != null)
         {
             GameManager.Instance.SpawnPlayer(spawner.position, spawner.rotation);
         }
+        
+        var p = GameManager.Instance.CurrentPlayer;
+        ui.AmmoRoot.SetGameObjectActive(p.settings.jumpCount != 0);
     }
     
 }

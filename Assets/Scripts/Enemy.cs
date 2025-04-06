@@ -81,6 +81,7 @@ public class ChaseState : EnemyState
         , cancellationToken: cts.Token);
 
         enemy.moving = false;
+        enemy.SwitchState(EEnemyState.Patrol);
     }
 
     public override UniTask ExitState()

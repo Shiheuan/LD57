@@ -249,14 +249,14 @@ private void InitDebugInfo()
 }
 private void OnGUI()
 {
-    _logs.Add($"[IsGrounded] {controller.isGrounded} [CurrentJumpCount] {currentJumpCount} [CurrentFallingDis] {currentFallingDistance}");
-    _logs.Add($"[currentMotion] {currentMotion} [dtMotion] {dtMotion}");
-    _logs.Add($"[freelookcam forward] {freeLookCamera.transform.forward} [dir] {moveForwardDirection}");
-    for (int i = 0; i < _logs.Count; i++)
-    {
-        GUI.Label(new Rect(10, 60 + i * 20, 500, 20), _logs[i], _sharedStyle);
-    }
-    _logs.Clear();
+    // _logs.Add($"[IsGrounded] {controller.isGrounded} [CurrentJumpCount] {currentJumpCount} [CurrentFallingDis] {currentFallingDistance}");
+    // _logs.Add($"[currentMotion] {currentMotion} [dtMotion] {dtMotion}");
+    // _logs.Add($"[freelookcam forward] {freeLookCamera.transform.forward} [dir] {moveForwardDirection}");
+    // for (int i = 0; i < _logs.Count; i++)
+    // {
+    //     GUI.Label(new Rect(10, 60 + i * 20, 500, 20), _logs[i], _sharedStyle);
+    // }
+    // _logs.Clear();
 }
 #endregion
 }

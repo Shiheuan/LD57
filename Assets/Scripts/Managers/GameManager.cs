@@ -49,18 +49,21 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (isGameOver && Input.GetKeyDown(KeyCode.R))
         {
             LevelManager.Instance.StartLevel();
+            FindObjectOfType<ShowInfo>().HideTips();
         }
     }
     
     public bool isGameOver = false;
+    public int DepthBaseline = 0; // level
     
     public void GameOver()
     {
         isGameOver = true;
         // show some tip
+        FindObjectOfType<ShowInfo>().ShowTips("Game Over, RESET with [R]", false);
     }
     public void RestartGame()
     {
