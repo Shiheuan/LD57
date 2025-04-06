@@ -28,6 +28,8 @@ public class Player : MonoBehaviour
     private CinemachineFreeLook freeLookCamera;
     private Camera _camera;
     private Animator animator;
+    public Transform LookAtTarget;
+    public Transform FollowTarget;
     
     void Awake()
     {
@@ -36,6 +38,18 @@ public class Player : MonoBehaviour
         freeLookCamera = FindObjectOfType<CinemachineFreeLook>();
         _camera = Camera.main;
         animator = GetComponentInChildren<Animator>();
+        
+        BindCamera();
+    }
+
+    public void BindCamera()
+    {
+        if (freeLookCamera == null)
+        {
+            freeLookCamera = FindObjectOfType<CinemachineFreeLook>();
+        }
+        freeLookCamera.LookAt = LookAtTarget;
+        freeLookCamera.Follow = FollowTarget;
     }
     
     // Start is called before the first frame update
@@ -72,11 +86,29 @@ public class Player : MonoBehaviour
     {
         return currentFallingDistance <= settings.maxFallingDistance;
     }
+
+    void Die()
+    {
+        gameObject.SetGameObjectActive(false);
+        FreezeControl = true;
+        GameManager.Instance.SpawnDieFx(transform.position+Vector3.up, transform.rotation);
+    }
 #region Presentation
     public ParticleSystem sparkjet;
     public GameObject GunRoot;
+    public int GetDepth()
+    {
+        return (int)transform.position.y;
+    }
+
+    public void ShowGun(bool enable)
+    {
+        GunRoot.SetGameObjectActive(enable);
+    }
 #endregion
 #region Movement
+
+    public bool FreezeControl = false;
     private bool jumpFlag = false;
     private float vSpeed;
     private Vector3 currentMotion;
@@ -104,6 +136,7 @@ public class Player : MonoBehaviour
             {
                 Debug.Log("Landing Died!");
                 // destroy frog and restart game
+                Die();
             }
             vSpeed = 0;
             currentJumpCount = 0;
@@ -115,6 +148,7 @@ public class Player : MonoBehaviour
             {
                 Debug.Log("Falling Died!");
                 // destroy frog and restart game¬
+                Die();
             }
             currentFallingDistance += pos_new.y - pos_old.y;
         }
@@ -131,6 +165,11 @@ public class Player : MonoBehaviour
     {
         var speed = controller.isGrounded?settings.moveSpeed:settings.moveSpeedInAir;
         var hMotion = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"))*speed;
+        if (FreezeControl)
+        {
+            hMotion = Vector2.zero;
+        }
+        
         if (hMotion != Vector2.zero)
         {
             transform.forward = Vector3.Slerp(transform.forward, moveForwardDirection, settings.turnSpeed * deltaTime);
@@ -194,16 +233,5 @@ private void OnGUI()
     }
     _logs.Clear();
 }
-
-public int GetDepth()
-{
-    return (int)transform.position.y;
-}
-
-public void ShowGun(bool enable)
-{
-    GunRoot.SetGameObjectActive(enable);
-}
-
 #endregion
 }

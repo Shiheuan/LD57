@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using MCommon.Unity.Utils;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -71,5 +73,57 @@ public class GameManager : MonoBehaviour
         newBullet.Init(position, rotation);
         return newBullet;
     }
-#endregion
+
+    public GameObject PlayerPrefab;
+    [HideInInspector]
+    public Player CurrentPlayer;
+
+    public GameObject DieFxPool;
+    public GameObject DieFxPrefab;
+
+    public Player SpawnPlayer(Vector3 position, Quaternion rotation)
+    {
+        if (CurrentPlayer == null)
+        {
+            CurrentPlayer = Instantiate(PlayerPrefab, position, rotation).GetComponent<Player>();
+            // bind camera
+            return CurrentPlayer;
+        }
+        
+        CurrentPlayer.transform.SetPositionAndRotation(position, rotation);
+        CurrentPlayer.gameObject.SetGameObjectActive(true);
+        // change vc
+        return CurrentPlayer;
+    }
+
+    public void SpawnDieFx(Vector3 position, Quaternion rotation)
+    {
+        for (int i = 0; i < DieFxPool.transform.childCount; i++)
+        {
+            var fx = DieFxPool.transform.GetChild(i).GetComponent<ParticleSystem>();
+            if (fx.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+            fx.transform.SetPositionAndRotation(position, rotation);
+            fx.gameObject.SetGameObjectActive(true);
+            fx.Play();
+            DelayHide(8f,fx.gameObject).Forget();
+            return;
+        }
+        
+        if (DieFxPrefab != null)
+        {
+            var fx = Instantiate(DieFxPrefab, position, rotation, DieFxPool.transform);
+            fx.SetGameObjectActive(true);
+            DelayHide(8f,fx).Forget();
+        }
+    }
+
+    async UniTaskVoid DelayHide(float duration, GameObject obj)
+    {
+        await UniTask.WaitForSeconds(duration);
+        obj.SetGameObjectActive(false);
+    }
+    #endregion
 }
