@@ -1,14 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using MCommon.Unity.Utils;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class ShowInfo : MonoBehaviour
 {
     private Player player;
     private int currentDepth;
+    private int ammoCount;
     public GameObject ScoreRoot;
     public TMP_Text scoreText;
     public GameObject AmmoRoot;
@@ -28,8 +26,14 @@ public class ShowInfo : MonoBehaviour
     {
         if (player != null && player.GetDepth() != currentDepth)
         {
-            scoreText.text = currentDepth.ToString();
             currentDepth = player.GetDepth();
+            scoreText.text = currentDepth.ToString();
+        }
+
+        if (player != null && player.GetLeftJumpCount() != ammoCount)
+        {
+            ammoCount = player.GetLeftJumpCount();
+            ammoText.text = ammoCount.ToString();
         }
     }
 

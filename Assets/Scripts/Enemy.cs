@@ -35,6 +35,7 @@ public class PatrolState : EnemyState
     
     public override async UniTask EnterState()
     {
+        cts = new CancellationTokenSource();
         var v2 = enemy.settings.PatrolPoints[currentPointIndex];
         var pos = enemy.SetDestination(v2);
         enemy.moving = true;
@@ -48,6 +49,7 @@ public class PatrolState : EnemyState
     
     private async UniTask SwitchNextPoint()
     {
+        cts = new CancellationTokenSource();
         enemy.moving = false;
         await UniTask.Delay(2000, cancellationToken: cts.Token);
         await EnterState();
@@ -71,6 +73,7 @@ public class ChaseState : EnemyState
     
     public override async UniTask EnterState()
     {
+        cts = new CancellationTokenSource();
         var p = GameManager.Instance.CurrentPlayer;
         if (p == null) enemy.SwitchState(EEnemyState.Patrol);
         enemy.SetChaseTarget(p.transform);
@@ -101,10 +104,11 @@ public class DeadState : EnemyState
 
     public override async UniTask EnterState()
     {
+        cts = new CancellationTokenSource();
         enemy.isDie = true;
         // await enemy.animator.PlayAsync("Death", cancellationToken: cts.Token);
         
-        await UniTask.Delay(3000);
+        await UniTask.Delay(3000, cancellationToken: cts.Token);
         enemy.gameObject.SetGameObjectActive(false);
         enemy.EndAI();
     }
@@ -119,6 +123,7 @@ public struct EnemySettings
     public float PatrolSpeed;
     public float ChaseSpeed;
     public float TurnSpeed;
+    public int MaxHP;
 }
 
 public enum EEnemyState {
@@ -277,4 +282,16 @@ public class Enemy : MonoBehaviour
         transform.Translate(motion);
     }
     #endregion
+
+    public void Init(EnemySpawner spawner)
+    {
+        EndAI();
+        settings = spawner.OverrideSettings;
+        transform.position = spawner.transform.position;
+        transform.rotation = spawner.transform.rotation;
+        isDie = false;
+        currentHP = settings.MaxHP;
+        gameObject.SetGameObjectActive(true);
+        StartAI();
+    }
 }

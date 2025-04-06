@@ -87,6 +87,8 @@ public class LevelManager : MonoBehaviour
         
         ui.ScoreRoot.gameObject.SetGameObjectActive(nextLevel != ELevelType.Intro);
         
+        GameManager.Instance.RespawnAllEnemies();
+        
         switch (nextLevel)
         {
             case ELevelType.Intro:

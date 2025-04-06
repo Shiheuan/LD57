@@ -221,6 +221,12 @@ public class Player : MonoBehaviour
         }
     }
 
+    public int GetLeftJumpCount()
+    {
+        var countLeft = settings.jumpCount - (uint)currentJumpCount;
+        return (int)countLeft;
+    }
+
     private CancellationTokenSource freezeCts;
     public void SpawnFreeze(float duration)
     {

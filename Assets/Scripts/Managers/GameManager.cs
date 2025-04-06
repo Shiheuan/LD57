@@ -65,14 +65,36 @@ public class GameManager : MonoBehaviour
         // show some tip
         FindObjectOfType<ShowInfo>().ShowTips("Game Over, RESET with [R]", false);
     }
-    public void RestartGame()
+
+    public void RespawnAllEnemies()
     {
-        
+        // hide enemies
+        var enemies = FindObjectsByType<Enemy>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        foreach (var e in enemies)
+        {
+            e.gameObject.SetGameObjectActive(false);
+        }
+        // respawn them
+        var spawners = FindObjectsByType<EnemySpawner>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        foreach (var s in spawners)
+        {
+            SpawnEnemy(s);
+        }
     }
 #region Spawner
 
     public GameObject BulletPool;
     public GameObject BulletPrefab;
+    public GameObject PlayerPrefab;
+    [HideInInspector]
+    public Player CurrentPlayer;
+
+    public GameObject DieFxPool;
+    public GameObject DieFxPrefab;
+
+    public GameObject EnemyPrefab;
+    public GameObject EnemyPool;
+    
     public Bullet SpawnBullet(Vector3 position, Quaternion rotation)
     {
         for (int i = 0; i < BulletPool.transform.childCount; i++)
@@ -91,13 +113,6 @@ public class GameManager : MonoBehaviour
         newBullet.Init(position, rotation);
         return newBullet;
     }
-
-    public GameObject PlayerPrefab;
-    [HideInInspector]
-    public Player CurrentPlayer;
-
-    public GameObject DieFxPool;
-    public GameObject DieFxPrefab;
 
     public Player SpawnPlayer(Vector3 position, Quaternion rotation)
     {
@@ -144,6 +159,26 @@ public class GameManager : MonoBehaviour
     {
         await UniTask.WaitForSeconds(duration);
         obj.SetGameObjectActive(false);
+    }
+
+
+    public Enemy SpawnEnemy(EnemySpawner spawner)
+    {
+        for (int i = 0; i < EnemyPool.transform.childCount; i++)
+        {
+            Enemy enemy = EnemyPool.transform.GetChild(i).GetComponent<Enemy>();
+            if (enemy.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+            
+            enemy.Init(spawner);
+            return enemy;
+        }
+        
+        Enemy newEnemy = Instantiate(EnemyPrefab, EnemyPool.transform).GetComponent<Enemy>();
+        newEnemy.Init(spawner);
+        return newEnemy;
     }
     #endregion
 }

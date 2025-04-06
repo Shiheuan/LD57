@@ -5226,15 +5226,19 @@ MonoBehaviour:
     - {x: 12, y: 12}
     - {x: 0, y: 12}
     - {x: 0, y: 0}
-    PlayerDetectRange: 0
+    PlayerDetectRange: 25
     ReachTolerance: 0.5
     PatrolSpeed: 3
     ChaseSpeed: 4
     TurnSpeed: 2
+    MaxHP: 3
   Destination: {x: 12, y: 10, z: 0}
   isDie: 0
   moving: 0
-  currentHP: 0
+  currentHP: 3
+  hazardTrigger: {fileID: 4505566080782001580}
+  groundSphere: {fileID: 859572778723352633}
+  RenderRoot: {fileID: 355830973735000852}
   ChaseTarget: {fileID: 0}
 --- !u!1001 &6853472964866653406
 PrefabInstance:
@@ -5298,3 +5302,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6417051486065677364, guid: a3e9f204705294785aafb6be5dcddcd4, type: 3}
   m_PrefabInstance: {fileID: 6853472964866653406}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4505566080782001580 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -2190278688420800142, guid: a3e9f204705294785aafb6be5dcddcd4, type: 3}
+  m_PrefabInstance: {fileID: 6853472964866653406}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad528ebfe36194aeda2e719f5ca0cf1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

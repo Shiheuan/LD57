@@ -33,7 +33,7 @@ public class PickUpGunTrigger : MonoBehaviour
             player.ShowGun(true);
             // update jump count
             player.settings.jumpCount = 2;
-            
+            FindObjectOfType<ShowInfo>().AmmoRoot.SetGameObjectActive(true);
             gameObject.SetGameObjectActive(false);
         }
     }
