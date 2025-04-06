@@ -39,7 +39,7 @@ public class PatrolState : EnemyState
         enemy.moving = true;
 
         await UniTask.WaitUntil(() => 
-            Vector3.Distance(enemy.transform.position, pos) < enemy.settings.ReachTolerance, cancellationToken: cts.Token);
+            enemy != null && Vector3.Distance(enemy.transform.position, pos) < enemy.settings.ReachTolerance, cancellationToken: cts.Token);
 
         enemy.currentPointIndex = (enemy.currentPointIndex + 1) % enemy.settings.PatrolPoints.Length;
         await SwitchNextPoint();

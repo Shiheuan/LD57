@@ -10,8 +10,10 @@ public class LevelFinishTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            LevelManager.Instance.nextLevel = nextLevel;
-            LevelManager.Instance.StartLevel();
+            // how to show
+            GameManager.Instance.ShowEndScreen(nextLevel);
+            //LevelManager.Instance.nextLevel = nextLevel;
+            //LevelManager.Instance.StartLevel();
         }
     }
 }

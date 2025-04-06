@@ -158,6 +158,8 @@ public class Player : MonoBehaviour
     
     private uint currentJumpCount;
     private float currentFallingDistance;
+    [SerializeField]
+    private ParticleSystem moveParticle;
     void updateMovement(float deltaTime)
     {
         var hm = _getHorizontalMotion(deltaTime);
@@ -168,6 +170,7 @@ public class Player : MonoBehaviour
         dtMotion = currentMotion * deltaTime;
         // reset jump flag
         jumpFlag = false;
+        var lastGrounded = controller.isGrounded;
         var pos_old = transform.position;
         var flags = controller.Move(dtMotion);
         var pos_new = transform.position;
@@ -182,6 +185,8 @@ public class Player : MonoBehaviour
             vSpeed = 0;
             currentJumpCount = 0;
             currentFallingDistance = 0;
+            if (lastGrounded == false)
+                moveParticle.Play();
         }
         else
         {
@@ -192,6 +197,8 @@ public class Player : MonoBehaviour
                 Die();
             }
             currentFallingDistance += pos_new.y - pos_old.y;
+            if (lastGrounded)
+                moveParticle.Stop();
         }
         //Debug.Log($"curr position: {transform.position}");
     }
@@ -259,6 +266,7 @@ public class Player : MonoBehaviour
     private CancellationTokenSource freezeCts;
     public void SpawnFreeze(float duration)
     {
+        moveParticle.Play();
         freezeCts = new CancellationTokenSource();
         FreezeDuration(duration, freezeCts).Forget();
     }

@@ -27,7 +27,7 @@ public class ShowInfo : MonoBehaviour
         if (player != null && player.GetDepth() != currentDepth)
         {
             currentDepth = player.GetDepth();
-            scoreText.text = currentDepth.ToString();
+            scoreText.text = (currentDepth - GameManager.Instance.DepthBaseline).ToString();
         }
 
         if (player != null && player.GetLeftJumpCount() != ammoCount)

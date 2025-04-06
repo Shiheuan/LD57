@@ -49,7 +49,8 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (isGameOver && Input.GetKeyDown(KeyCode.R))
+        if ((isGameOver && Input.GetKeyDown(KeyCode.R)) || 
+            (waitOperation && Input.GetKeyDown(KeyCode.Return)))
         {
             LevelManager.Instance.StartLevel();
             FindObjectOfType<ShowInfo>().HideTips();
@@ -61,19 +62,62 @@ public class GameManager : MonoBehaviour
     
     public void GameOver()
     {
+        string tip = String.Empty;
+        if (CurrentPlayer != null && CurrentPlayer.GunRoot.activeSelf == false)
+        {
+            tip = ConstString.GameOverWithoutGun;
+            LevelManager.Instance.nextLevel = ELevelType.Intro;
+        }
+        else
+        {
+            tip = ConstString.GameOver;
+        }
         isGameOver = true;
         // show some tip
-        FindObjectOfType<ShowInfo>().ShowTips("Game Over, RESET with [R]", false);
+        FindObjectOfType<ShowInfo>().ShowTips(tip, false);
     }
 
-    public void RespawnAllEnemies()
+    public bool waitOperation;
+    public async UniTaskVoid ShowEndScreen(ELevelType nextLevel)
     {
-        // hide enemies
+        HideAllEnemies();
+        string e1 = string.Empty, e2 = string.Empty;
+        switch (LevelManager.Instance.nextLevel)
+        {
+            case ELevelType.Level1:
+                e1 = ConstString.Level1Ending;
+                e2 = ConstString.Level1EndingWithOperation;
+                break;
+            case ELevelType.Level2:
+                e1 = ConstString.Level2Ending;
+                e2 = ConstString.Level2EndingWithOperation;
+                break;
+            case ELevelType.Level3:
+                e1 = ConstString.Level3Ending;
+                e2 = ConstString.Level3EndingWithOperation;
+                break;
+        }
+        
+        FindObjectOfType<ShowInfo>().ShowTips(e1, true);
+        await UniTask.WaitForSeconds(3f);
+        FindObjectOfType<ShowInfo>().ShowTips(e2, true);
+        LevelManager.Instance.nextLevel = nextLevel;
+        waitOperation = true;
+    }
+
+    public void HideAllEnemies()
+    {
         var enemies = FindObjectsByType<Enemy>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         foreach (var e in enemies)
         {
             e.gameObject.SetGameObjectActive(false);
         }
+    }
+    
+    public void RespawnAllEnemies()
+    {
+        // hide enemies
+        HideAllEnemies();
         // respawn them
         var spawners = FindObjectsByType<EnemySpawner>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         foreach (var s in spawners)
