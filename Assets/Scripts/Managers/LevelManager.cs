@@ -105,7 +105,7 @@ public class LevelManager : MonoBehaviour
                 break;
             case ELevelType.Level3:
                 spawner = Level_3_Spawner.transform;
-                GameManager.Instance.DepthBaseline = 120;
+                GameManager.Instance.DepthBaseline = 140;
                 bgm = "bgm";
                 break;
             case ELevelType.Endless:
